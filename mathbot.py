@@ -4,8 +4,8 @@ import time
 from sympy import *
 
 
-def RedditFriendlyString(string):
-    return string.replace('*','\*')
+def RedditFriendlyString(text):
+    return text.replace('*','\*')
 
 def Authenticate():
     reddit = praw.Reddit('RedditMathBot',user_agent='Simple math bot v1.0')
@@ -48,7 +48,7 @@ def Execute(reddit):
             print("\nTimes : ",times)
 
             x = Symbol(variable)
-            result = RedditFriendlyString(simplify(diff(exp,x,times)))
+            result = RedditFriendlyString(str(simplify(diff(exp,x,times))))
             print("Solution :",result)
             
             comment.reply(result)
