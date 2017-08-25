@@ -1,11 +1,16 @@
 import praw
 import re as regex
 import time
+import os
 from sympy import *
 
+def StoreIDs(comments_replied_to):    
+    with open("comments_replied_to.txt", "w") as f:
+        for comment_id in comments_replied_to:
+            f.write(comment_id + "\n")
 
 def RedditFriendlyString(text):
-    return text.replace('*','\*')
+    return text.replace('**','^').replace('*','\*')
 
 def Authenticate():
     reddit = praw.Reddit('RedditMathBot',user_agent='Simple math bot v1.0')
@@ -13,48 +18,77 @@ def Authenticate():
     return reddit
 
 def Execute(reddit):
+    
+    
+    if not os.path.isfile("comments_replied_to.txt"):
+        comments_replied_to = []
+    else:
+        comments_replied_to = open("comments_replied_to.txt").read().splitlines()
+
+
     for comment in reddit.subreddit('test').comments(limit = 25):
-        if("!RedditMathBot|Solve:" in comment.body): #Solve an equation
-            print("Found a math problem")
-            com = comment.body.split("Solve: ",1)[1] #Seperate the arguements
-      
-            print("\nTrying to process...")
-            exp = str.strip(regex.search( r'\[(.*?),' , com).group(1)) #The expression
-            variable = str.strip(regex.search( r',(.*?)\]', com).group(1)) #The variable to solve for
-            print("\nExpression to solve:",exp)
-            print("\nVariable to solve for:",variable)
+        if comment.id not in comments_replied_to:
+            if("!RedditMathBot|Solve:" in comment.body): #Solve an equation
+                print("\nFound a math problem")
+                com = comment.body.split("Solve: ",1)[1] #Seperate the arguements
+        
+                print("Trying to process...")
+                exp = str.strip(regex.search( r'\[(.*?),' , com).group(1)) #The expression
+                variable = str.strip(regex.search( r',(.*?)\]', com).group(1)) #The variable to solve for
+                print("Expression to solve:",exp)
+                print("Variable to solve for:",variable)
+
+                
+                x = Symbol(variable)
+                
+                result = solve(exp,x)
+                print("Solution :",result)
+                comment.reply("Solution : "+str(result))
+                if(comment.id not in comments_replied_to): comments_replied_to.append(comment.id)
+
+            if("!RedditMathBot|Diff:" in comment.body): #Differentiate an expression
+                print("\nFound a math problem")
+                com = comment.body.split("Diff: ",1)[1] #Seperate the arguements
+                
+                print("Trying to process...")
+                exp = str.strip(regex.search( r'\[(.*?),' , com).group(1)) #The expression
+                variable = str.strip(regex.search( r',(.*?),', com).group(0))[1] #The variable to solve for
+                times = str.strip(regex.search( r',[0-9]\]',com).group(0))[1] #How many times to diff
+                print("Differentiate exp :",exp)
+                print("For variable :",variable)
+                print("Times : ",times)
+
+                x = Symbol(variable)
+            
+                result = RedditFriendlyString(str(simplify(diff(exp,x,times))))
+                print("Solution :",result)
+                comment.reply("The derivative is : "+result)
+                if(comment.id not in comments_replied_to): comments_replied_to.append(comment.id)
+
+            if("!RedditMathBot|Limit:" in comment.body): #Find the limit of an expression
+                print("\nFound a math problem")
+                com = comment.body.split("Limit: ",1)[1] #Seperate the arguements
+                
+                print("Trying to process...")
+                exp = str.strip(regex.search( r'\[(.*?),' , com).group(1)) #The expression
+                variable = str.strip(regex.search( r',(.*?),', com).group(0))[1] 
+                appr = str.strip(regex.search( r',(.*?)\]',com).group(0))[1] #What our variable is approaching
+                print("Limit of :",exp)
+                print("For variable :",variable)
+                print("Approaching : ",appr)
+
+                x = Symbol(variable)
+                
+                result = RedditFriendlyString(str(limit(exp,variable,appr)))
+                print("Solution :",result)
+                comment.reply("The limit is : "+result)
+                if(comment.id not in comments_replied_to): comments_replied_to.append(comment.id)
+
+
+            StoreIDs(comments_replied_to)
 
             
-            x = Symbol(variable)
-            result = solve(exp,x)
-            print("Solution :",result)
-            if(result != []):
-                reply_message = ''.join((str(e)+' ') for e in result)
-            else:
-                reply_message = 'Could not find a solution.. :\'('
-                comment.reply(reply_message)  
-                print("Replied with : ",reply_message)
-
-        elif("!RedditMathBot|Diff:" in comment.body): #Differentiate an expression
-            print("Found a math problem")
-            com = comment.body.split("Diff: ",1)[1] #Seperate the arguements
-            
-            print("\nTrying to process...")
-            exp = str.strip(regex.search( r'\[(.*?),' , com).group(1)) #The expression
-            variable = str.strip(regex.search( r',(.*?),', com).group(0))[1] #The variable to solve for
-            times = str.strip(regex.search( r',[0-9]\]',com).group(0))[1] #How many times to diff
-            print("\nDifferentiate exp :",exp)
-            print("\nFor variable :",variable)
-            print("\nTimes : ",times)
-
-            x = Symbol(variable)
-            result = RedditFriendlyString(str(simplify(diff(exp,x,times))))
-            print("Solution :",result)
-            
-            comment.reply(result)
-
-
-    print("Sleeping for 10s...")
+    print("\n\nSleeping for 10s...")
     time.sleep(10)
 
 
