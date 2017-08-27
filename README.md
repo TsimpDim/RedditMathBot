@@ -28,7 +28,7 @@ Examples :
 * \<help message\>
 
 3. !RedditMathBot|Limit: [sin(x) + cos(x)/sqrt(2\*x2),x,pi]
-* The limit of 'sin(x) + cos(x)/sqrt(2\*\*x\*2) (x->pi' is : -sqrt(2)\*2\*\*(-pi/2)/2
+* The limit of 'sin(x) + cos(x)/sqrt(2\*\*x\*2) (x->pi)' is : -sqrt(2)\*2\*\*(-pi/2)/2
 
 ---
 
