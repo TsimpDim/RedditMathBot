@@ -24,7 +24,7 @@ Examples :
 2. !RedditMathBot|Help 
 !RedditMathBot|Solve: [3\*x - 1,x]
 
-* Solution : [1/3]
+* Solution to '3\*x - 1': [1/3]
 * \<help message\>
 
 3. !RedditMathBot|Limit: [sin(x) + cos(x)/sqrt(2\*x2),x,pi]
