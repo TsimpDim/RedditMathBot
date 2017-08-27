@@ -62,7 +62,7 @@ def Execute(reddit):
                     
                     result = RedditFriendlyString(str(simplify(solve(exp,x))))
                     print("Solution :",result)
-                    comment.reply("Solution : "+result)
+                    comment.reply("Solution to '"+RedditFriendlyString(str(exp))+ "': "+ result)
                 except:
                     print("Something went wrong, check the syntax")
                     pass
@@ -87,7 +87,7 @@ def Execute(reddit):
                 
                     result = RedditFriendlyString(str(simplify(diff(exp,x,times))))
                     print("Solution :",result)
-                    comment.reply("The derivative is : "+result)
+                    comment.reply("The derivative of '"+RedditFriendlyString(str(exp))+"' ,"+str(times)+" time(s) is : "+result)
                 except:
                     print("Something went wrong, check the syntax")
                     pass
@@ -111,7 +111,7 @@ def Execute(reddit):
                     
                     result = RedditFriendlyString(str(limit(exp,variable,appr)))
                     print("Solution :",result)
-                    comment.reply("The limit is : "+result)
+                    comment.reply("The limit of '"+RedditFriendlyString(str(exp))+" ("+str(variable)+"->"+str(appr)+")' is : "+result)
                 except:
                     print("Something went wrong, check the syntax")
                     pass
